@@ -9,6 +9,20 @@ import io
 import random
 import json
 
+# --- UI ENHANCEMENTS ---
+# New modern dark color palette
+PRIMARY_BG = "#181a20"         # Very dark blue/gray
+SECONDARY_BG = "#23272f"       # Slightly lighter dark
+ACCENT = "#7f5af0"             # Vivid purple accent
+BUTTON_BG = "#23272f"          # Button background
+BUTTON_FG = "#f5f7fa"          # Button text
+BUTTON_ACTIVE_BG = "#7f5af0"   # Button active background
+BUTTON_ACTIVE_FG = "#fff"      # Button active text
+HEADER_BG = "#23272f"          # Header background
+HEADER_FG = "#7f5af0"          # Header text
+ENTRY_BG = "#23272f"           # Entry background
+ENTRY_FG = "#f5f7fa"           # Entry text
+
 PORT = 12345
 
 sent_count = 0
@@ -77,6 +91,7 @@ def show_popup(message, bg_color="#ff4500", gif_url=None):
     print(f"DEBUG: show_popup starting with message: '{message}', bg: {bg_color}, gif: {gif_url}")  # NEW: Entry point check
     popup = tk.Toplevel(root)
     popup.title("ALERT!")
+    popup.configure(bg=SECONDARY_BG)
     
     # Make it big and center it
     width = 1000
@@ -94,7 +109,7 @@ def show_popup(message, bg_color="#ff4500", gif_url=None):
     print("DEBUG: Popup window created and attributes set")  # NEW: Did we make the window?
     
     # Use canvas for background GIF
-    canvas = tk.Canvas(popup, bg=bg_color, highlightthickness=0)
+    canvas = tk.Canvas(popup, bg=bg_color, highlightthickness=0, bd=0, relief='flat')
     canvas.pack(fill='both', expand=True)
     
     # GIF as background if provided (cover whole)
@@ -144,7 +159,7 @@ def show_popup(message, bg_color="#ff4500", gif_url=None):
             print(f"Error animating GIF: {e}")
     
     # Large message text with shadow and wrapping
-    label_font = font.Font(family="Arial", size=48, weight="bold")
+    label_font = font.Font(family="Segoe UI", size=48, weight="bold")
     lines = wrap_text(message, label_font, width - 100)
     y = 100
     linespace = label_font.metrics("linespace")
@@ -153,11 +168,14 @@ def show_popup(message, bg_color="#ff4500", gif_url=None):
         canvas.create_text(width / 2, y, text=line, font=label_font, fill="white", anchor='center')
         y += linespace
     
-    # OK button
-    button_font = font.Font(family="Arial", size=24)
-    button = tk.Button(popup, text="OK", command=popup.destroy, font=button_font,
-                       bg="#32cd32", fg="white", activebackground="#228b22", padx=40, pady=20)
-    canvas.create_window(width / 2, height - 100, window=button, anchor='center')
+    # OK button (smaller, rounded)
+    button_font = font.Font(family="Segoe UI", size=16)
+    ok_btn = tk.Button(popup, text="OK", command=popup.destroy, font=button_font,
+                       bg=BUTTON_BG, fg=BUTTON_FG, activebackground=BUTTON_ACTIVE_BG, activeforeground=BUTTON_ACTIVE_FG,
+                       padx=20, pady=8, relief='flat', bd=0, highlightthickness=0)
+    # Rounded corners for OK button (using tk.Button, not ttk)
+    ok_btn.configure(borderwidth=0, highlightbackground=ACCENT, highlightcolor=ACCENT, highlightthickness=2)
+    canvas.create_window(width / 2, height - 100, window=ok_btn, anchor='center')
     
     # Snowfall effect for cold popup
     if "freezing" in message.lower():
@@ -269,31 +287,35 @@ if not dev_mode:
 # GUI
 root = tk.Tk()
 style = ttk.Style()
-style.theme_use('clam')  # Use 'clam' theme for better custom color support
+try:
+    style.theme_use('clam')
+except:
+    pass
 
 root.title("Awesome App" if not dev_mode else "Dev Mode")
-root.geometry("1000x800")  # Larger to fit more buttons
-root.configure(bg="#f0f8ff")  # Light blue background
+root.geometry("1000x800")
+root.configure(bg=PRIMARY_BG)
+
+# Header bar
+header = tk.Frame(root, bg=HEADER_BG, height=60)
+header.pack(fill='x', side='top')
+header_label = tk.Label(header, text="Awesome App", font=("Segoe UI", 28, "bold"), bg=HEADER_BG, fg=HEADER_FG)
+header_label.pack(pady=10)
 
 # Custom font
-title_font = font.Font(family="Arial", size=14, weight="bold")
-button_font = font.Font(family="Arial", size=12)
+title_font = font.Font(family="Segoe UI", size=16, weight="bold")
+button_font = font.Font(family="Segoe UI", size=14)
 
 # Configure label style
-style.configure('TLabel', foreground='#ff4500', background='#f0f8ff')
-
-# Title label
-title_label = ttk.Label(root, text="Awesome App", font=title_font)
-title_label.pack(pady=10)
+style.configure('TLabel', foreground=ACCENT, background=PRIMARY_BG, font=("Segoe UI", 12))
 
 # Counter labels
 my_received_var = tk.StringVar(value="My Alerts Received: 0")
 opponent_received_var = tk.StringVar(value="Opponent's Alerts Received: 0")
 
-my_label = ttk.Label(root, textvariable=my_received_var)
+my_label = ttk.Label(root, textvariable=my_received_var, style='TLabel')
 my_label.pack(pady=5)
-
-opp_label = ttk.Label(root, textvariable=opponent_received_var)
+opp_label = ttk.Label(root, textvariable=opponent_received_var, style='TLabel')
 opp_label.pack(pady=5)
 
 def update_counters():
@@ -303,59 +325,55 @@ def update_counters():
 update_counters()
 
 # New frame for custom alert
-custom_frame = tk.Frame(root, bg="#f0f8ff")  # Match the root bg for style points
+custom_frame = tk.Frame(root, bg=PRIMARY_BG)
 custom_frame.pack(pady=10)
 
 # Message entry
-msg_entry = tk.Entry(custom_frame, width=30)
-msg_entry.pack(side='left', padx=5)
-msg_entry.insert(0, "Enter custom message")  # Placeholder text
+msg_entry = tk.Entry(custom_frame, width=30, font=("Segoe UI", 12), bg=ENTRY_BG, fg=ENTRY_FG, relief='flat', insertbackground=ACCENT)
+msg_entry.pack(side='left', padx=5, ipady=6)
+msg_entry.insert(0, "Enter custom message")
 msg_entry.bind("<FocusIn>", lambda e: msg_entry.delete(0, tk.END) if msg_entry.get() == "Enter custom message" else None)
 msg_entry.bind("<FocusOut>", lambda e: msg_entry.insert(0, "Enter custom message") if not msg_entry.get() else None)
 
 # GIF entry with placeholder
-gif_entry = tk.Entry(custom_frame, width=30)
-gif_entry.pack(side='left', padx=5)
-gif_entry.insert(0, "GIF URL (optional)")  # Placeholder text
+gif_entry = tk.Entry(custom_frame, width=30, font=("Segoe UI", 12), bg=ENTRY_BG, fg=ENTRY_FG, relief='flat', insertbackground=ACCENT)
+gif_entry.pack(side='left', padx=5, ipady=6)
+gif_entry.insert(0, "GIF URL (optional)")
 gif_entry.bind("<FocusIn>", lambda e: gif_entry.delete(0, tk.END) if gif_entry.get() == "GIF URL (optional)" else None)
 gif_entry.bind("<FocusOut>", lambda e: gif_entry.insert(0, "GIF URL (optional)") if not gif_entry.get() else None)
 
+# Button style with rounded corners
+style.configure('Modern.TButton', background=BUTTON_BG, foreground=BUTTON_FG, font=button_font, padding=12, relief="flat", borderwidth=0)
+style.map('Modern.TButton', background=[('active', BUTTON_ACTIVE_BG)], foreground=[('active', BUTTON_ACTIVE_FG)])
+# Add rounded corners using layout (ttk hack)
+style.layout('Modern.TButton', [
+    ('Button.border', {'sticky': 'nswe', 'children': [
+        ('Button.padding', {'sticky': 'nswe', 'children': [
+            ('Button.label', {'sticky': 'nswe'})
+        ]})
+    ]})
+])
+style.configure('Modern.TButton', borderwidth=0, focusthickness=3, focuscolor=ACCENT)
+
 # Send Custom button
-send_custom_btn = ttk.Button(custom_frame, text="Send Custom", command=lambda: send_custom(msg_entry.get(), gif_entry.get()), style='Stop.TButton')
+send_custom_btn = ttk.Button(custom_frame, text="Send Custom", command=lambda: send_custom(msg_entry.get(), gif_entry.get()), style='Modern.TButton')
 send_custom_btn.pack(side='left', padx=5)
 
-# Configure button styles (fancy with more padding, rounded borders via focuscolor/width)
-style.configure('Stop.TButton', background="#32cd32", foreground="white", font=button_font, padding=15, relief="flat", borderwidth=2, focusthickness=3, focuscolor="#228b22")
-style.map('Stop.TButton', background=[('active', "#228b22")])
-
-style.configure('Cold.TButton', background="blue", foreground="white", font=button_font, padding=15, relief="flat", borderwidth=2, focusthickness=3, focuscolor="darkblue")
-style.map('Cold.TButton', background=[('active', "darkblue")])
-
-style.configure('Alert1.TButton', background="#00ff00", foreground="white", font=button_font, padding=15, relief="flat", borderwidth=2, focusthickness=3, focuscolor="#008b00")
-style.map('Alert1.TButton', background=[('active', "#008b00")])
-
-style.configure('Alert2.TButton', background="#ffff00", foreground="black", font=button_font, padding=15, relief="flat", borderwidth=2, focusthickness=3, focuscolor="#cdcd00")
-style.map('Alert2.TButton', background=[('active', "#cdcd00")])
-
-style.configure('Alert3.TButton', background="#ff00ff", foreground="white", font=button_font, padding=15, relief="flat", borderwidth=2, focusthickness=3, focuscolor="#8b008b")
-style.map('Alert3.TButton', background=[('active', "#8b008b")])
-
-# Send Alert button
-button = ttk.Button(root, text="Scrolling!", command=lambda: send_alert('STOP'), style='Stop.TButton')
+# Main alert buttons
+button = ttk.Button(root, text="Scrolling!", command=lambda: send_alert('STOP'), style='Modern.TButton')
 button.pack(pady=20)
 
 if is_host == 'y':
-    cold_button = ttk.Button(root, text="It's Cold", command=lambda: send_alert('COLD'), style='Cold.TButton')
+    cold_button = ttk.Button(root, text="It's Cold", command=lambda: send_alert('COLD'), style='Modern.TButton')
     cold_button.pack(pady=20)
 
-# Extra buttons
-alert1_button = ttk.Button(root, text="Working hard!", command=lambda: send_alert('ALERT1'), style='Alert1.TButton')
+alert1_button = ttk.Button(root, text="Working hard!", command=lambda: send_alert('ALERT1'), style='Modern.TButton')
 alert1_button.pack(pady=10)
 
-alert2_button = ttk.Button(root, text="Hardly working!", command=lambda: send_alert('ALERT2'), style='Alert2.TButton')
+alert2_button = ttk.Button(root, text="Hardly working!", command=lambda: send_alert('ALERT2'), style='Modern.TButton')
 alert2_button.pack(pady=10)
 
-alert3_button = ttk.Button(root, text="Ansys!", command=lambda: send_alert('ALERT3'), style='Alert3.TButton')
+alert3_button = ttk.Button(root, text="Ansys!", command=lambda: send_alert('ALERT3'), style='Modern.TButton')
 alert3_button.pack(pady=10)
 
 root.mainloop()
