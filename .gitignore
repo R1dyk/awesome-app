@@ -1,2 +1,4 @@
 /build
-client.spec
+client.spe
+hacks.txt
+/electron-client/node_modules
