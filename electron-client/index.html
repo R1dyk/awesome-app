@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Alert App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Multi-User Alert App</h1>
+    <div class="controls">
+      <button id="set-username">Set Username</button>
+      <button id="refresh-clients">Refresh Clients</button>
+      <button id="connect-btn">Connect</button>
+      <label><input type="checkbox" id="dev-mode"> Dev Mode</label>
+    </div>
+    <p id="status">Ready</p>
+    <p id="received-count">Alerts Received: 0</p>
+    <p id="sent-count">Alerts Sent: 0</p>
+    <div class="target">
+      <label>Send to:</label>
+      <select id="target-select">
+        <option value="">All Clients</option>
+      </select>
+    </div>
+    <div class="custom">
+      <input id="custom-msg" placeholder="Enter custom message">
+      <input id="custom-gif" placeholder="GIF URL (optional)">
+      <button id="send-custom">Send Custom</button>
+    </div>
+    <div class="buttons">
+      <button class="alert-btn" data-type="STOP" style="background: #ff4500; color: white;">Stop Scrolling! 😊</button>
+      <button class="alert-btn" data-type="COLD" style="background: #1e90ff; color: white;">It's Cold! ❄️</button>
+      <button class="alert-btn" data-type="ALERT1" style="background: #00ff00; color: white;">Working Hard!</button>
+      <button class="alert-btn" data-type="ALERT2" style="background: #ffff00; color: black;">Hardly Working!</button>
+      <button class="alert-btn" data-type="ALERT3" style="background: #ff00ff; color: white;">Ansys!</button>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
