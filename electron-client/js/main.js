@@ -46,19 +46,26 @@ const alerts = {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 900,
+    width: 500,
+    height: 600,
+    frame: false,
+    resizable: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false
     }
   });
-  mainWindow.loadFile('index.html');
+  // mainWindow.loadFile(path.join(__dirname, '../html/index.html'));
+  mainWindow.loadFile(path.join(__dirname, '../html/login.html'));
+
+  // Handle window state changes (e.g., toggle maximize/restore)
   mainWindow.on('closed', () => {
     mainWindow = null;
     if (socket) socket.destroy();
   });
+  mainWindow.on('maximize', () => mainWindow.webContents.send('window-maximized'));
+  mainWindow.on('unmaximize', () => mainWindow.webContents.send('window-unmaximized'));
 }
 
 app.whenReady().then(createWindow);
@@ -118,13 +125,26 @@ function extractFirstJSONObject(buffer) {
 ipcMain.handle('connect-to-server', async (event, { host, isDev }) => {
   devMode = !!isDev;
   if (devMode) {
-    // Offline dev mode; don't mark connected
+    // Dev mode: simulate connection and send mock data
     if (socket) {
       try { socket.destroy(); } catch {}
     }
     socket = null;
     connected = false;
-    mainWindow?.webContents.send('update-status', 'Developer Mode - Offline');
+    sentCount = 0;
+    receivedCount = 0;
+    // Mock clients
+    const mockClients = [
+      { id: 1, username: 'DevUser1' },
+      { id: 2, username: 'DevUser2' },
+      { id: 3, username: 'DevUser3' }
+    ];
+    setTimeout(() => {
+      mainWindow?.webContents.send('update-status', 'Developer Mode - Offline');
+      mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
+      mainWindow?.webContents.send('update-client-list', mockClients);
+    }, 100);
+    global.mockClients = mockClients;
     return { success: true, message: 'Developer Mode - Offline' };
   }
   try {
@@ -165,6 +185,12 @@ ipcMain.handle('connect-to-server', async (event, { host, isDev }) => {
 
 ipcMain.handle('set-username', (event, newUsername) => {
   username = newUsername || 'Anonymous';
+  if (devMode) {
+    setTimeout(() => {
+      mainWindow?.webContents.send('update-status', `Username set to ${username}`);
+    }, 100);
+    return username;
+  }
   if (connected) {
     sendMessage({ type: 'SET_USERNAME', username });
   }
@@ -173,17 +199,22 @@ ipcMain.handle('set-username', (event, newUsername) => {
 
 ipcMain.handle('send-alert', (event, alertType) => {
   sentCount++;
-  if (devMode || !connected) {
-    showPopup(alerts[alertType]);
-  } else {
-    // Send legacy raw string so Python server treats it as legacy alert
-    try {
-      socket.write(String(alertType));
-    } catch (e) {
-      console.error('Failed to send alert:', e);
-    }
+  if (devMode) {
+    setTimeout(() => {
+      mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
+      showPopup(alerts[alertType]);
+    }, 100);
+    return true;
   }
-  mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
+  if (!connected) {
+    sendMessage({ 
+      type: 'LEGACY_ALERT',
+      alert_type: alertType,
+      target: targetClientId
+    });
+    mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
+    return true;
+  }
 });
 
 ipcMain.handle('send-custom', (event, { msg, gif }) => {
@@ -192,26 +223,86 @@ ipcMain.handle('send-custom', (event, { msg, gif }) => {
   const colors = ['#ff4500', '#1e90ff', '#00ff00', '#ffff00', '#ff00ff'];
   const bg = colors[Math.floor(Math.random() * colors.length)];
   const gifUrl = gif && gif !== 'GIF URL (optional)' ? gif : null;
-  if (devMode || !connected) {
-    showPopup({ message: msg, bg, gif_url: gifUrl });
-  } else {
-    sendMessage({
+  if (devMode) {
+    setTimeout(() => {
+      mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
+      showPopup({ message: msg, bg, gif_url: gifUrl });
+    }, 100);
+    return true;
+  }
+  if (!connected) {
+    sendMessage({ 
       type: 'CUSTOM',
       message: msg,
       bg,
       gif_url: gifUrl,
-      target_id: targetClientId
+      target: targetClientId
     });
+    mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
+    return true;
   }
-  mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
 });
 
 ipcMain.handle('set-target', (event, id) => {
   targetClientId = id ? Number(id) : null;
+  if (devMode) {
+    setTimeout(() => {
+      mainWindow?.webContents.send('update-status', id ? `Target set to ${id}` : 'Target set to all clients');
+    }, 100);
+    return true;
+  }
+});
+
+ipcMain.handle('login-attempt', async (event, data) => {
+  if (!data.dev) {
+    return; // Non-dev login not implemented, so do nothing
+  }
+  devMode = !!data.dev;
+  // Rest of the dev mode simulation code remains the same...
 });
 
 ipcMain.handle('request-client-list', () => {
+  if (devMode) {
+    setTimeout(() => {
+      mainWindow?.webContents.send('update-client-list', global.mockClients || [
+        { id: 1, username: 'DevUser1' },
+        { id: 2, username: 'DevUser2' },
+        { id: 3, username: 'DevUser3' }
+      ]);
+    }, 100);
+    return global.mockClients || [
+      { id: 1, username: 'DevUser1' },
+      { id: 2, username: 'DevUser2' },
+      { id: 3, username: 'DevUser3' }
+    ];
+  }
   if (connected) requestClientList();
+});
+
+ipcMain.on('window-minimize', () => mainWindow.minimize());
+ipcMain.on('window-maximize', () => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
+  }
+});
+ipcMain.on('window-close', () => mainWindow.close());
+
+ipcMain.on('login-success', () => {
+  mainWindow.setSize(1024 , 768);
+  mainWindow.setResizable(true);
+  mainWindow.center();
+  mainWindow.loadFile(path.join(__dirname, '../html/index.html'));
+});
+
+// Handle going back to login screen from index.html
+ipcMain.on('back-to-login', () => {
+  if (!mainWindow) return;
+  mainWindow.setSize(500, 600);
+  mainWindow.setResizable(false);
+  mainWindow.center();
+  mainWindow.loadFile(path.join(__dirname, '../html/login.html'));
 });
 
 function sendMessage(data) {
@@ -263,12 +354,19 @@ function showPopup(info) {
     alwaysOnTop: true,
     frame: false,
     transparent: false,
+    resizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true
+      contextIsolation: true,
+      nodeIntegration: false,
+      enableRemoteModule: false
     }
   });
-  popup.loadFile('popup.html');
+
+  // Explicitly remove any menu to prevent access
+  popup.setMenu(null);
+
+  popup.loadFile(path.join(__dirname, '../html/popup.html'));
   popup.webContents.on('did-finish-load', () => {
     popup.webContents.send('show-alert', info);
   });

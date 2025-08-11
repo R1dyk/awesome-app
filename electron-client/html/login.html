@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Awesome App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <header id="titlebar">
+        <div id="drag-region">
+            <div class="server-title-group">
+                <img id="server-icon" src="../assets/icons/Mono-Monkey.128.png" alt="Server Icon" draggable="false">
+                <div id="server-title">Login - Awesome App</div>
+            </div>
+            <div id="window-controls">
+                <button id="min-button" title="Minimize">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect y="6.5" width="14" height="1.5" rx="0.75" fill="currentColor"/>
+                </svg>
+                </button>
+                <button id="max-button" title="Maximize">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2.5" y="2.5" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+                </button>
+                <button id="restore-button" style="display: none;" title="Restore">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="4" y="4" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                    <rect x="2.5" y="2.5" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                </svg>
+                </button>
+                <button id="close-button" title="Close">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="3.5" y1="3.5" x2="10.5" y2="10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="10.5" y1="3.5" x2="3.5" y2="10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    <div class="login-container">
+        <form>
+            <div class="form-group">
+                <label for="username">Nickname:</label>
+                <input type="text" id="username" name="username" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                    <input type="password" id="password" name="password" autocomplete="current-password" style="padding-right: 2.2em; width: 100%;">
+                    <button type="button" id="toggle-password-visibility" aria-label="Show password" title="Show password" tabindex="-1" style="position: absolute; right: 0.5em; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; height: 1.8em; color: #aaa; z-index: 2;">
+                        <svg id="eye-icon" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 11C3.5 5.5 11 2 20 11C17.5 16.5 10.5 20 2 11" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <circle cx="11" cy="11" r="3.5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="submit" id="login-btn">Login</button>
+                <button type="button" id="register-btn">Register</button>
+                <button type="button" class="dev-mode-btn">Dev Mode</button>
+                <button type="button" id="refresh-css-btn" title="Refresh CSS">Refresh CSS</button>
+            </div>
+        </form>
+    </div>
+                <div style="position: fixed; left: 5px; bottom: 5px; font-size: 0.65em; font-weight: bold; color: #ffffff; z-index: 999; letter-spacing: 0.01em; display: flex; align-items: center; gap: 0.5em;">
+                    <span style="font-weight: 600;">v0.1</span>
+                </div>
+                <div style="position: fixed; right: 5px; bottom: 5px; font-size: 0.65em; color: #ffffff; z-index: 999; letter-spacing: 0.01em; display: flex; align-items: center; gap: 0.5em;">
+                    <span style="font-size: 1.2em; vertical-align: middle; font-family: 'Segoe UI Symbol', 'Arial Unicode MS', Arial, sans-serif;">&#x1F16D;</span>
+                    <span style="font-size: 0.98em;">open CC licence</span>
+                </div>
+</body>
+</body>
+<script src="../js/login.js"></script>
+<script>
+// Refresh CSS button logic
+document.getElementById('refresh-css-btn').addEventListener('click', function() {
+    const links = document.querySelectorAll('link[rel="stylesheet"]');
+    links.forEach(link => {
+        const href = link.getAttribute('href');
+        // Remove any existing cache buster
+        const cleanHref = href.replace(/([?&])_csscache=\d+/, '').replace(/([?&])$/, '');
+        const sep = cleanHref.includes('?') ? '&' : '?';
+        link.setAttribute('href', cleanHref + sep + '_csscache=' + Date.now());
+    });
+});
+
+// Password eye icon logic
+const passwordInput = document.getElementById('password');
+const toggleBtn = document.getElementById('toggle-password-visibility');
+if (toggleBtn && passwordInput) {
+    const showPassword = () => {
+        // Save cursor position
+        const start = passwordInput.selectionStart;
+        const end = passwordInput.selectionEnd;
+        passwordInput.type = 'text';
+        // Restore focus and cursor
+        passwordInput.focus();
+        passwordInput.setSelectionRange(start, end);
+    };
+    const hidePassword = () => {
+        const start = passwordInput.selectionStart;
+        const end = passwordInput.selectionEnd;
+        passwordInput.type = 'password';
+        passwordInput.focus();
+        passwordInput.setSelectionRange(start, end);
+    };
+    toggleBtn.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        showPassword();
+    });
+    toggleBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        showPassword();
+    });
+    toggleBtn.addEventListener('mouseup', (e) => {
+        e.preventDefault();
+        hidePassword();
+    });
+    toggleBtn.addEventListener('mouseleave', hidePassword);
+    toggleBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        hidePassword();
+    });
+    toggleBtn.addEventListener('touchcancel', hidePassword);
+}
+</script>
+</html> 

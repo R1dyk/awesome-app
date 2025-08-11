@@ -1,0 +1,136 @@
+$color-bg: #0f172a
+$color-bg-secondary: #0b1220
+$color-bg-input: #273449
+$color-primary: #f97316
+$color-login-btn: #16a34a
+$color-register-btn: #2563eb
+$color-text: #e2e8f0
+$color-text-secondary: #e5e7eb
+$color-btn-bg: #1f2937
+$color-btn-hover: #374151
+$color-border: rgba(255,255,255,0.08)
+$font-main: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif
+$radius: 10px
+$padding-card: 20px
+$padding-btn: 10px 16px
+$padding-input: 12px 14px
+$gap-main: 20px
+$gap-controls: 10px
+$gap-buttons: 16px
+$gap-stats: 12px
+
+// Login Page Styling (awesome style)
+.login-page
+  flex: 1
+  display: flex
+  justify-content: center
+  align-items: center
+  background: $color-bg
+
+.login-container
+  height: 100%
+  width: 100%
+  background: $color-bg-secondary
+  padding: 1.5rem
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18)
+  color: $color-text
+  font-family: $font-main
+  box-sizing: border-box
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  box-sizing: border-box
+    
+.login-container h2
+  margin-bottom: 1.5rem
+  text-align: center
+  color: $color-primary
+
+.form-group
+  margin-bottom: 1rem
+
+form
+  width: 100%
+  box-sizing: border-box
+
+label
+  display: block
+  margin-bottom: 0.3rem
+  color: $color-text-secondary
+
+input[type="text"], input[type="password"]
+  padding: $padding-input
+  padding-right: 15px
+  border: 1px solid $color-border
+  border-radius: $radius
+  background: $color-bg-input
+  color: $color-text
+  font-family: $font-main
+  font-size: 1em
+  box-sizing: border-box
+  width: 100%
+  outline: none
+  border: none
+
+.button-group
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
+  margin-top: 1rem
+  width: 100%
+  align-items: center
+
+
+button
+  padding: $padding-btn
+  border: none
+  border-radius: $radius
+  background: $color-btn-bg
+  color: $color-text-secondary
+  font-size: 1rem
+  cursor: pointer
+  transition: background 0.2s
+  font-family: $font-main
+  width: 35%
+  text-align: center
+  border: 1px solid transparent
+
+#toggle-password-visibility
+  width: auto !important
+  min-width: unset
+  max-width: unset
+  padding: 0 !important
+  background: none !important
+  border: none !important
+
+#toggle-password-visibility:active svg, #toggle-password-visibility.pressed svg
+  color: #fff
+  transform: scale(1.18)
+  transition: color 0.1s, transform 0.1s
+
+#toggle-password-visibility svg
+  transition: color 0.1s, transform 0.1s
+  width: 28px
+  height: 28px
+
+button:hover
+  border: 1px solid rgb(255,255,255)
+  background: darken($color-login-btn, 5%)
+  font-weight: bold
+  background: $color-btn-hover
+  color: $color-text
+
+#login-btn
+  background: $color-login-btn  
+
+#register-btn
+  background: $color-register-btn
+
+.dev-mode-btn
+  background: #f59e42
+  color: #fff
+
+.dev-mode-btn:hover
+  background: #333
+  color: #fff

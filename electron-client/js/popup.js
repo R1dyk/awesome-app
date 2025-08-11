@@ -1,11 +1,50 @@
-const { api } = window;
-
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('popup-container');
   const messageEl = document.getElementById('message');
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
   const okBtn = document.getElementById('ok-btn');
+  // Add a background <img> for the gif
+  let bgImg = document.getElementById('popup-bg-img');
+  if (!bgImg) {
+    bgImg = document.createElement('img');
+    bgImg.id = 'popup-bg-img';
+    bgImg.style.position = 'absolute';
+    bgImg.style.top = '0';
+    bgImg.style.left = '0';
+    bgImg.style.width = '100%';
+    bgImg.style.height = '100%';
+    bgImg.style.maxWidth = '100%';
+    bgImg.style.maxHeight = '100%';
+    bgImg.style.objectFit = 'cover';
+    bgImg.style.zIndex = '0';
+    bgImg.style.pointerEvents = 'none';
+    bgImg.style.aspectRatio = 'auto';
+    bgImg.style.display = 'block';
+    bgImg.style.transition = 'width 0.2s, height 0.2s';
+    // Responsive on resize
+    window.addEventListener('resize', () => {
+      bgImg.style.width = '100%';
+      bgImg.style.height = '100%';
+    });
+    container.prepend(bgImg);
+    // Ensure container is position:relative and hides overflow
+    container.style.position = 'relative';
+    container.style.overflow = 'hidden';
+    // Also ensure body and html do not scroll
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    // Move canvas above image
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.zIndex = '1';
+    // Message and button above all
+    messageEl.style.position = 'relative';
+    messageEl.style.zIndex = '2';
+    okBtn.style.position = 'relative';
+    okBtn.style.zIndex = '2';
+  }
 
   function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -23,17 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
     messageEl.textContent = info.message;
     resizeCanvas();
     currentImg = null;
+    // Set gif as background image
     if (info.gif_url) {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = info.gif_url;
-      img.onload = () => {
-        currentImg = img;
-        drawCoverImage(img);
-      };
+      bgImg.src = info.gif_url;
+      bgImg.style.display = '';
     } else {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      bgImg.src = '';
+      bgImg.style.display = 'none';
     }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     const lower = (info.message || '').toLowerCase();
     if (lower.includes('freezing') || lower.includes('cold')) {
       animateSnow(canvas, ctx);
@@ -69,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     function draw() {
-      // Do not clear image; draw only snow
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       snowflakes.forEach(flake => {
         ctx.beginPath();
         ctx.arc(flake.x, flake.y, flake.size, 0, Math.PI * 2);

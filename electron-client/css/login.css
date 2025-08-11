@@ -1,0 +1,130 @@
+.login-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f172a;
+}
+
+.login-container {
+  height: 100%;
+  width: 100%;
+  background: #0b1220;
+  padding: 1.5rem;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  color: #e2e8f0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.login-container h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #f97316;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+form {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #e5e7eb;
+}
+
+input[type=text], input[type=password] {
+  padding: 12px 14px;
+  padding-right: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: #273449;
+  color: #e2e8f0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 1em;
+  box-sizing: border-box;
+  width: 100%;
+  outline: none;
+  border: none;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  width: 100%;
+  align-items: center;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #1f2937;
+  color: #e5e7eb;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  width: 35%;
+  text-align: center;
+  border: 1px solid transparent;
+}
+
+#toggle-password-visibility {
+  width: auto !important;
+  min-width: unset;
+  max-width: unset;
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
+}
+
+#toggle-password-visibility:active svg, #toggle-password-visibility.pressed svg {
+  color: #fff;
+  transform: scale(1.18);
+  transition: color 0.1s, transform 0.1s;
+}
+
+#toggle-password-visibility svg {
+  transition: color 0.1s, transform 0.1s;
+  width: 28px;
+  height: 28px;
+}
+
+button:hover {
+  border: 1px solid rgb(255, 255, 255);
+  background: rgb(18.9675675676, 140.5324324324, 63.8);
+  font-weight: bold;
+  background: #374151;
+  color: #e2e8f0;
+}
+
+#login-btn {
+  background: #16a34a;
+}
+
+#register-btn {
+  background: #2563eb;
+}
+
+.dev-mode-btn {
+  background: #f59e42;
+  color: #fff;
+}
+
+.dev-mode-btn:hover {
+  background: #333;
+  color: #fff;
+}/*# sourceMappingURL=login.css.map */

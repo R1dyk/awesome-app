@@ -1,14 +1,14 @@
 {
   "name": "awesome-app",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "js/main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
   },
   "devDependencies": {
     "electron": "^37.2.6",
-    "electron-builder": "^24.14.1"
+    "electron-builder": "^26.0.19"
   },
   "build": {
     "appId": "com.example.awesomeapp",

@@ -3,3 +3,4 @@ client.spe
 hacks.txt
 /electron-client/node_modules
 /electron-client/dist
+*.map
