@@ -30,6 +30,7 @@ $gap-stats: 12px
 // Use $color-primary for close hover, $color-btn-hover for button hover
 
 // Titlebar container
+
 #titlebar
   flex: 0 0 32px
   height: 32px
@@ -39,6 +40,30 @@ $gap-stats: 12px
   align-items: center
   padding: 0
   border-bottom: 1px solid rgba(255,255,255,0.07)
+  position: relative
+
+.title-center
+  position: absolute
+  left: 0
+  right: 0
+  top: 0
+  height: 32px
+  display: flex
+  align-items: center
+  justify-content: center
+  pointer-events: none
+  z-index: 1
+
+  #server-title
+    pointer-events: none
+
+.user-display
+  margin-left: 16px
+  color: $color-stat
+  font-size: 13px
+  font-weight: 500
+  min-width: 80px
+  z-index: 2
 
 // Drag region
 
@@ -111,6 +136,8 @@ $gap-stats: 12px
   justify-content: center
   padding: 0
   margin: 0
+  &:hover
+    background: $color-btn-hover
 
 #restore-button
   display: none !important
@@ -129,9 +156,6 @@ body
       display: none !important
     #restore-button
       display: flex !important
-
-#window-controls button:hover
-  background: $color-btn-hover
 
 #close-button:hover
   background: $color-primary
@@ -211,6 +235,9 @@ input
   border: 1px solid $color-border
   background: $color-bg-secondary
   color: $color-text-secondary
+  &:focus-visible
+    outline: none
+    box-shadow: none
 
 select
   padding: $padding-select

@@ -1,18 +1,14 @@
+
+// =========================
+// Imports
+// =========================
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const net = require('net');
 
-let mainWindow;
-let socket = null;
-let connected = false;
-let username = 'Anonymous';
-let otherClients = [];
-let targetClientId = null;
-let sentCount = 0;
-let receivedCount = 0;
-let devMode = false;
-let dataBuffer = '';
-
+// =========================
+// Constants
+// =========================
 const SERVER_HOST = '10.32.73.31';
 const SERVER_PORT = 12345;
 
@@ -44,41 +40,24 @@ const alerts = {
   },
 };
 
-function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 500,
-    height: 600,
-    frame: false,
-    resizable: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false
-    }
-  });
-  // mainWindow.loadFile(path.join(__dirname, '../html/index.html'));
-  mainWindow.loadFile(path.join(__dirname, '../html/login.html'));
+// =========================
+// State Variables
+// =========================
+let mainWindow;
+let socket = null;
+let connected = false;
+let username = 'Anonymous';
+let otherClients = [];
+let targetClientId = null;
+let sentCount = 0;
+let receivedCount = 0;
+let devMode = false;
+let dataBuffer = '';
 
-  // Handle window state changes (e.g., toggle maximize/restore)
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-    if (socket) socket.destroy();
-  });
-  mainWindow.on('maximize', () => mainWindow.webContents.send('window-maximized'));
-  mainWindow.on('unmaximize', () => mainWindow.webContents.send('window-unmaximized'));
-}
+// =========================
+// Helper Functions
+// =========================
 
-app.whenReady().then(createWindow);
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
-
-// Helper to extract first complete JSON object from a buffer string
 function extractFirstJSONObject(buffer) {
   let i = 0;
   // Skip leading whitespace
@@ -121,7 +100,79 @@ function extractFirstJSONObject(buffer) {
   return [null, buffer];
 }
 
-// IPC handlers for UI-python like logic
+function sendMessage(data) {
+  if (socket && connected) {
+    try {
+      socket.write(JSON.stringify(data));
+    } catch (e) {
+      console.error('Failed to send message:', e);
+    }
+  }
+}
+
+function requestClientList() {
+  sendMessage({ type: 'CLIENT_LIST_REQUEST' });
+}
+
+function processReceivedMessage(messageData) {
+  const type = messageData.type;
+  if (type === 'CUSTOM' || type === 'LEGACY_ALERT') {
+    receivedCount++;
+    const sender = messageData.sender_username || 'Unknown';
+    let alertInfo;
+    if (type === 'CUSTOM') {
+      alertInfo = {
+        message: `From ${sender}:\n${messageData.message}`,
+        bg: messageData.bg,
+        gif_url: messageData.gif_url
+      };
+    } else {
+      const base = alerts[messageData.alert_type] || { message: messageData.alert_type, bg: '#333', gif_url: null };
+      alertInfo = {
+        message: `From ${sender}:\n${base.message}`,
+        bg: base.bg,
+        gif_url: base.gif_url
+      };
+    }
+    showPopup(alertInfo);
+    mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
+  } else if (type === 'CLIENT_LIST_RESPONSE') {
+    otherClients = messageData.clients || [];
+    mainWindow?.webContents.send('update-client-list', otherClients);
+  }
+}
+
+function showPopup(info) {
+  const popup = new BrowserWindow({
+    width: 800,
+    height: 600,
+    alwaysOnTop: true,
+    frame: false,
+    transparent: false,
+    resizable: true,
+    icon: path.join(__dirname, '../assets/icons/cat-meme-64.ico'),
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      enableRemoteModule: false,
+      devTools: true
+    }
+  });
+
+  // Explicitly remove any menu to prevent access
+  popup.setMenu(null);
+
+  popup.loadFile(path.join(__dirname, '../html/popup.html'));
+  popup.webContents.on('did-finish-load', () => {
+    popup.webContents.send('show-alert', info);
+  });
+}
+
+// =========================
+// IPC Handlers
+// =========================
+
 ipcMain.handle('connect-to-server', async (event, { host, isDev }) => {
   devMode = !!isDev;
   if (devMode) {
@@ -305,70 +356,43 @@ ipcMain.on('back-to-login', () => {
   mainWindow.loadFile(path.join(__dirname, '../html/login.html'));
 });
 
-function sendMessage(data) {
-  if (socket && connected) {
-    try {
-      socket.write(JSON.stringify(data));
-    } catch (e) {
-      console.error('Failed to send message:', e);
-    }
-  }
-}
+// =========================
+// Main Electron App Logic
+// =========================
 
-function requestClientList() {
-  sendMessage({ type: 'CLIENT_LIST_REQUEST' });
-}
-
-function processReceivedMessage(messageData) {
-  const type = messageData.type;
-  if (type === 'CUSTOM' || type === 'LEGACY_ALERT') {
-    receivedCount++;
-    const sender = messageData.sender_username || 'Unknown';
-    let alertInfo;
-    if (type === 'CUSTOM') {
-      alertInfo = {
-        message: `From ${sender}:\n${messageData.message}`,
-        bg: messageData.bg,
-        gif_url: messageData.gif_url
-      };
-    } else {
-      const base = alerts[messageData.alert_type] || { message: messageData.alert_type, bg: '#333', gif_url: null };
-      alertInfo = {
-        message: `From ${sender}:\n${base.message}`,
-        bg: base.bg,
-        gif_url: base.gif_url
-      };
-    }
-    showPopup(alertInfo);
-    mainWindow?.webContents.send('update-counters', { sent: sentCount, received: receivedCount });
-  } else if (type === 'CLIENT_LIST_RESPONSE') {
-    otherClients = messageData.clients || [];
-    mainWindow?.webContents.send('update-client-list', otherClients);
-  }
-}
-
-function showPopup(info) {
-  const popup = new BrowserWindow({
-    width: 800,
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 500,
     height: 600,
-    alwaysOnTop: true,
     frame: false,
-    transparent: false,
-    resizable: true,
+    resizable: false,
+    icon: path.join(__dirname, '../assets/icons/cat-meme-64.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
-      nodeIntegration: false,
-      enableRemoteModule: false,
-      devTools: true
+      nodeIntegration: false
     }
   });
+  // mainWindow.loadFile(path.join(__dirname, '../html/index.html'));
+  mainWindow.loadFile(path.join(__dirname, '../html/login.html'));
 
-  // Explicitly remove any menu to prevent access
-  popup.setMenu(null);
-
-  popup.loadFile(path.join(__dirname, '../html/popup.html'));
-  popup.webContents.on('did-finish-load', () => {
-    popup.webContents.send('show-alert', info);
+  // Handle window state changes (e.g., toggle maximize/restore)
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+    if (socket) socket.destroy();
   });
+  mainWindow.on('maximize', () => mainWindow.webContents.send('window-maximized'));
+  mainWindow.on('unmaximize', () => mainWindow.webContents.send('window-unmaximized'));
 }
+
+app.whenReady().then(createWindow);
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});

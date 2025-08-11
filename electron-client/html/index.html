@@ -7,10 +7,13 @@
 </head>
 <body>
   <header id="titlebar">
-    <div id="drag-region">
+    <span id="user-display" class="user-display">Anonymous</span>
+    <div id="drag-region">  
       <div class="server-title-group">
-        <img id="server-icon" src="../assets/icons/Mono-Monkey.128.png" alt="Server Icon" draggable="false">
-        <div id="server-title">Awesome App</div>
+        <div class="title-center">
+          <img id="server-icon" src="../assets/icons/Mono-Monkey.128.png" alt="Server Icon" draggable="false">
+          <div id="server-title">Awesome App</div>
+        </div>
       </div>
       <div id="window-controls">
         <button id="min-button" title="Minimize">
@@ -40,7 +43,7 @@
   </header>
   <div class="container">
     <div class="controls">
-      <button id="set-username">Set Username</button>
+      
       <button id="refresh-clients">Refresh Clients</button>
       <button id="connect-btn">Connect to server</button>
       <label><input type="checkbox" id="dev-mode"> Dev Mode</label>
