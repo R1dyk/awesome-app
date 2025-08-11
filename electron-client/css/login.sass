@@ -1,3 +1,5 @@
+@use 'sass:color'
+  
 $color-bg: #0f172a
 $color-bg-secondary: #0b1220
 $color-bg-input: #273449
@@ -95,6 +97,12 @@ button
   width: 35%
   text-align: center
   border: 1px solid transparent
+  &:hover
+    border: 1px solid rgb(255,255,255)
+    background: color.adjust($color-login-btn, $lightness: -5%)
+    font-weight: bold
+    background: $color-btn-hover
+    color: $color-text 
 
 #toggle-password-visibility
   width: auto !important
@@ -113,13 +121,6 @@ button
   transition: color 0.1s, transform 0.1s
   width: 28px
   height: 28px
-
-button:hover
-  border: 1px solid rgb(255,255,255)
-  background: darken($color-login-btn, 5%)
-  font-weight: bold
-  background: $color-btn-hover
-  color: $color-text
 
 #login-btn
   background: $color-login-btn  

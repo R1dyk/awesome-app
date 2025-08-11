@@ -1,0 +1,46 @@
+.popup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  position: relative;
+  padding: 32px 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.popup-x-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s;
+}
+.popup-x-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+.popup-x-btn span, .popup-x-btn > * {
+  display: block;
+  line-height: 1;
+  margin-top: 0px;
+}/*# sourceMappingURL=popup.css.map */

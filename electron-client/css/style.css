@@ -127,28 +127,6 @@ main {
   overflow: auto;
 }
 
-.popup-x-btn {
-  position: absolute;
-  top: 18px;
-  right: 24px;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 28px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-.popup-x-btn:hover {
-  background: rgba(255, 0, 0, 0.788);
-}
-
 body {
   background: #0f172a;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;

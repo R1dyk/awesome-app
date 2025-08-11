@@ -81,6 +81,13 @@ button {
   text-align: center;
   border: 1px solid transparent;
 }
+button:hover {
+  border: 1px solid rgb(255, 255, 255);
+  background: rgb(18.9675675676, 140.5324324324, 63.8);
+  font-weight: bold;
+  background: #374151;
+  color: #e2e8f0;
+}
 
 #toggle-password-visibility {
   width: auto !important;
@@ -101,14 +108,6 @@ button {
   transition: color 0.1s, transform 0.1s;
   width: 28px;
   height: 28px;
-}
-
-button:hover {
-  border: 1px solid rgb(255, 255, 255);
-  background: rgb(18.9675675676, 140.5324324324, 63.8);
-  font-weight: bold;
-  background: #374151;
-  color: #e2e8f0;
 }
 
 #login-btn {

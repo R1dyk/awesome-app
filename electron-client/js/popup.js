@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
   const okBtn = document.getElementById('ok-btn');
+  const xBtn = document.getElementById('popup-x-btn');
   // Add a background <img> for the gif
   let bgImg = document.getElementById('popup-bg-img');
   if (!bgImg) {
@@ -59,7 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   api.showAlert((event, info) => {
     container.style.backgroundColor = info.bg || '#333';
-    messageEl.textContent = info.message;
+  // Render message with line breaks
+  messageEl.innerHTML = (info.message || '').replace(/\n/g, '<br>');
     resizeCanvas();
     currentImg = null;
     // Set gif as background image
@@ -78,6 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   okBtn.addEventListener('click', () => window.close());
+
+  // Add event listener for X button to close the window
+  if (xBtn) {
+    xBtn.addEventListener('click', () => window.close());
+  }
 
   function drawCoverImage(img) {
     const cw = canvas.width, ch = canvas.height;

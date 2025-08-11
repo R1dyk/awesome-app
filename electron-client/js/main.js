@@ -23,7 +23,7 @@ const alerts = {
     gif_url: 'https://media1.tenor.com/m/DafLbvYgt50AAAAC/trump-donald-trump.gif'
   },
   'COLD': {
-    message: "Turning off the AC, it's freezing! ❄️🥶❄️",
+    message: "Yakutsk!\n🥶🥶🥶🥶🥶",
     bg: "#1e90ff",
     gif_url: 'https://media1.tenor.com/m/ShXWuFDDZ8wAAAAd/vtactor007-rwmartin.gif'
   },
@@ -33,7 +33,7 @@ const alerts = {
     gif_url: 'https://media1.tenor.com/m/yHhqdtTladoAAAAC/cat-typing-typing.gif'
   },
   'ALERT2': {
-    message: "Hardly working!",
+    message: "Hardly working...",
     bg: "#ffff00",
     gif_url: 'https://media1.tenor.com/m/3pwRCgEnqN8AAAAC/sleeping-at-work-fail.gif'
   },
@@ -359,7 +359,8 @@ function showPopup(info) {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      enableRemoteModule: false
+      enableRemoteModule: false,
+      devTools: true
     }
   });
 
